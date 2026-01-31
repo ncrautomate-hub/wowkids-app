@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WowKids Parent Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-blue-50 min-h-screen font-sans">
+
+    <div id="hero-section" class="p-6 max-w-md mx-auto">
+        <div class="bg-white rounded-2xl shadow-xl p-6 text-center mt-10">
+            <h1 class="text-3xl font-bold text-blue-600 mb-2">WowKids 🎈</h1>
+            <p class="text-gray-500 mb-6">Little Learners Academy</p>
+            <div class="flex space-x-2 mb-6">
+                <button onclick="showSection('login')" class="flex-1 bg-blue-100 text-blue-600 py-2 rounded-lg font-semibold hover:bg-blue-200">Parent Login</button>
+                <button onclick="showSection('inquiry')" class="flex-1 bg-green-100 text-green-600 py-2 rounded-lg font-semibold hover:bg-green-200">New Inquiry</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="login-section" class="hidden p-6 max-w-md mx-auto">
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Check Status</h2>
+            <input type="number" id="login-phone" placeholder="Enter Phone (e.g., 999)" class="w-full p-3 border rounded-lg mb-4">
+            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700">Check Status</button>
+            <button onclick="location.reload()" class="w-full text-gray-400 mt-2 text-sm">Back</button>
+            <div id="login-loader" class="loader mx-auto mt-4 hidden"></div>
+            <p id="login-error" class="text-red-500 text-sm mt-3 text-center hidden"></p>
+        </div>
+    </div>
+
+    <div id="dashboard-section" class="hidden p-6 max-w-md mx-auto">
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-4">
+            <div class="bg-blue-600 p-4 text-white">
+                <h2 id="student-name" class="text-2xl font-bold">Student Name</h2>
+                <p id="parent-name" class="text-blue-100 text-sm">Parent Name</p>
+            </div>
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4 border-b pb-4">
+                    <span class="text-gray-500">Fee Status</span>
+                    <span id="fee-status" class="px-3 py-1 rounded-full text-sm font-bold bg-gray-100">Loading...</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-500">Amount Due</span>
+                    <span id="fee-amount" class="text-xl font-bold text-gray-800">₹0</span>
+                </div>
+            </div>
+        </div>
+        
+        <h3 class="text-lg font-bold text-gray-700 mt-6 mb-3">Daily Updates 📅</h3>
+        <div id="diary-container" class="space-y-4">
+            <p class="text-gray-400 text-center italic">No updates yet...</p>
+        </div>
+        
+        <button onclick="location.reload()" class="w-full text-gray-500 py-4 mt-4">Sign Out</button>
+    </div>
+
+    <div id="inquiry-section" class="hidden p-6 max-w-md mx-auto">
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Admission Inquiry 📝</h2>
+            <form onsubmit="handleInquiry(event)">
+                <input type="text" id="inq-name" placeholder="Parent Name" required class="w-full p-3 border rounded-lg mb-3">
+                <input type="tel" id="inq-phone" placeholder="Phone Number" required class="w-full p-3 border rounded-lg mb-3">
+                <button type="submit" class="w-full bg-green-500 text-white py-3 rounded-lg font-bold hover:bg-green-600">Submit Inquiry</button>
+            </form>
+            <button onclick="location.reload()" class="w-full text-gray-400 mt-2 text-sm">Back</button>
+            <div id="inq-loader" class="loader mx-auto mt-4 hidden"></div>
+            <p id="inq-success" class="text-green-600 text-center mt-3 hidden font-bold">Success! We will call you.</p>
+        </div>
+    </div>
+
+    <script>
+        // 👇👇 PASTE YOUR URL INSIDE THE QUOTES BELOW 👇👇
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzfo0ZqbqC1PoiaFGA75eB-X47CCvJTg18E9w5heAqMqWlynDs6uRSLTp_m8fCYYBP/exec"; 
+        // 👆👆 MAKE SURE QUOTES ARE PRESENT " " 👆👆
+
+        function showSection(section) {
+            console.log("Switching to:", section);
+            ['hero-section', 'login-section', 'inquiry-section', 'dashboard-section'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(section + '-section').classList.remove('hidden');
+        }
+
+        function handleLogin() {
+            const phone = document.getElementById('login-phone').value;
+            const loader = document.getElementById('login-loader');
+            const errorMsg = document.getElementById('login-error');
+            
+            if (!phone) { alert("Please enter a phone number"); return; }
+            if (SCRIPT_URL.includes("PASTE_YOUR")) { alert("❌ Error: You forgot to paste the Script URL in the code!"); return; }
+
+            loader.classList.remove('hidden');
+            errorMsg.classList.add('hidden');
+
+            fetch(`${SCRIPT_URL}?action=getStudent&phone=${phone}`)
+                .then(res => res.json())
+                .then(data => {
+                    loader.classList.add('hidden');
+                    if (data.error) {
+                        errorMsg.textContent = "❌ Not Found. Try 999 or check Sheet.";
+                        errorMsg.classList.remove('hidden');
+                    } else {
+                        showSection('dashboard');
+                        document.getElementById('student-name').textContent = data.name;
+                        document.getElementById('parent-name').textContent = data.parent;
+                        document.getElementById('fee-amount').textContent = "₹" + data.fee_amount;
+                        
+                        // Badge Logic
+                        const badge = document.getElementById('fee-status');
+                        badge.textContent = data.fee_status;
+                        badge.className = `px-3 py-1 rounded-full text-sm font-bold ${data.fee_status === 'Paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+
+                        // Diary Logic
+                        const diary = document.getElementById('diary-container');
+                        diary.innerHTML = "";
+                        if (data.logs && data.logs.length > 0) {
+                            data.logs.forEach(log => {
+                                diary.innerHTML += `
+                                    <div class="bg-white rounded-xl shadow p-4 border-l-4 border-blue-400">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="font-bold text-gray-800">${log.date}</span>
+                                            <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">Report</span>
+                                        </div>
+                                        <p class="text-gray-600 text-sm mb-3">${log.note}</p>
+                                        <div class="flex gap-2 text-xs">
+                                            <span class="px-2 py-1 bg-green-50 text-green-700 rounded border">🍱 ${log.food}</span>
+                                            <span class="px-2 py-1 bg-purple-50 text-purple-700 rounded border">😴 ${log.sleep}</span>
+                                        </div>
+                                    </div>`;
+                            });
+                        } else {
+                            diary.innerHTML = '<p class="text-gray-400 text-center italic mt-4">No recent logs found.</p>';
+                        }
+                    }
+                })
+                .catch(err => {
+                    loader.classList.add('hidden');
+                    errorMsg.textContent = "Server Error: " + err.message;
+                    errorMsg.classList.remove('hidden');
+                    console.error("Fetch Error:", err);
+                });
+        }
+
+        function handleInquiry(e) {
+            e.preventDefault();
+            const form = {
+                action: "saveLead",
+                name: document.getElementById('inq-name').value,
+                phone: document.getElementById('inq-phone').value
+            };
+            
+            document.getElementById('inq-loader').classList.remove('hidden');
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(form)
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('inq-loader').classList.add('hidden');
+                document.getElementById('inq-success').classList.remove('hidden');
+                document.getElementById('inq-name').value = "";
+                document.getElementById('inq-phone').value = "";
+            })
+            .catch(err => alert("Error saving lead: " + err));
+        }
+    </script>
+</body>
+</html>
