@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WowKids Parent Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-blue-50 min-h-screen font-sans">
+
+    <div id="hero-section" class="p-6 max-w-md mx-auto">
+        <div class="bg-white rounded-2xl shadow-xl p-6 text-center mt-10">
+            <h1 class="text-3xl font-bold text-blue-600 mb-2">WowKids 🎈</h1>
+            <p class="text-gray-500 mb-6">Little Learners Academy</p>
+            
+            <div class="flex space-x-2 mb-6">
+                <button onclick="showSection('login')" class="flex-1 bg-blue-100 text-blue-600 py-2 rounded-lg font-semibold hover:bg-blue-200">Parent Login</button>
+                <button onclick="showSection('inquiry')" class="flex-1 bg-green-100 text-green-600 py-2 rounded-lg font-semibold hover:bg-green-200">New Inquiry</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="login-section" class="hidden p-6 max-w-md mx-auto">
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Check Your Child's Status</h2>
+            <input type="number" id="login-phone" placeholder="Enter Phone Number" class="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold shadow-md hover:bg-blue-700">Check Status</button>
+            <div id="login-loader" class="loader mx-auto mt-4 hidden"></div>
+            <p id="login-error" class="text-red-500 text-sm mt-3 text-center hidden"></p>
+        </div>
+    </div>
+
+    <div id="dashboard-section" class="hidden p-6 max-w-md mx-auto">
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-4">
+            <div class="bg-blue-600 p-4 text-white">
+                <h2 id="student-name" class="text-2xl font-bold">Student Name</h2>
+                <p id="parent-name" class="text-blue-100 text-sm">Parent Name</p>
+            </div>
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4 border-b pb-4">
+                    <span class="text-gray-500">Fee Status</span>
+                    <span id="fee-status" class="px-3 py-1 rounded-full text-sm font-bold bg-gray-100">Loading...</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-500">Amount Due</span>
+                    <span id="fee-amount" class="text-xl font-bold text-gray-800">₹0</span>
+                </div>
+            </div>
+        </div>
+        <button onclick="location.reload()" class="w-full text-gray-500 py-2">Sign Out</button>
+    </div>
+
+    <div id="inquiry-section" class="hidden p-6 max-w-md mx-auto">
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Admission Inquiry 📝</h2>
+            <form onsubmit="handleInquiry(event)">
+                <input type="text" id="inq-name" placeholder="Parent Name" required class="w-full p-3 border rounded-lg mb-3">
+                <input type="tel" id="inq-phone" placeholder="Phone Number" required class="w-full p-3 border rounded-lg mb-3">
+                <button type="submit" class="w-full bg-green-500 text-white py-3 rounded-lg font-bold shadow-md hover:bg-green-600">Submit Inquiry</button>
+            </form>
+            <div id="inq-loader" class="loader mx-auto mt-4 hidden"></div>
+            <p id="inq-success" class="text-green-600 text-center mt-3 hidden font-bold">Success! We will call you shortly.</p>
+        </div>
+    </div>
+
+    <script>
+        // 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxjK6Cxj-wroAQSqcHC-wvEFDpFrSSqel5ti-7102q_pVPTSYn9_MfWMIURhe18BkgD/exec";
+
+        function showSection(section) {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('inquiry-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.add('hidden');
+            
+            if (section === 'login') document.getElementById('login-section').classList.remove('hidden');
+            if (section === 'inquiry') document.getElementById('inquiry-section').classList.remove('hidden');
+        }
+
+        // 1️⃣ HANDLE LOGIN (Read Data)
+        function handleLogin() {
+            const phone = document.getElementById('login-phone').value;
+            const loader = document.getElementById('login-loader');
+            const errorMsg = document.getElementById('login-error');
+            
+            if (!phone) return;
+            
+            loader.classList.remove('hidden');
+            errorMsg.classList.add('hidden');
+
+            fetch(`${SCRIPT_URL}?action=getStudent&phone=${phone}`)
+                .then(response => response.json())
+                .then(data => {
+                    loader.classList.add('hidden');
+                    if (data.error) {
+                        errorMsg.textContent = "❌ Number not found. Try 999";
+                        errorMsg.classList.remove('hidden');
+                    } else {
+                        // Success! Show Dashboard
+                        document.getElementById('login-section').classList.add('hidden');
+                        document.getElementById('hero-section').classList.add('hidden');
+                        document.getElementById('dashboard-section').classList.remove('hidden');
+                        
+                        // Fill Data
+                        document.getElementById('student-name').textContent = data.name;
+                        document.getElementById('parent-name').textContent = data.parent;
+                        document.getElementById('fee-amount').textContent = "₹" + data.fee_amount;
+                        
+                        const statusBadge = document.getElementById('fee-status');
+                        statusBadge.textContent = data.fee_status;
+                        if(data.fee_status === "Paid") {
+                            statusBadge.className = "px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700";
+                        } else {
+                            statusBadge.className = "px-3 py-1 rounded-full text-sm font-bold bg-red-100 text-red-700";
+                        }
+                    }
+                })
+                .catch(err => {
+                    loader.classList.add('hidden');
+                    errorMsg.textContent = "Server Error. Please try again.";
+                    errorMsg.classList.remove('hidden');
+                });
+        }
+
+        // 2️⃣ HANDLE INQUIRY (Save Data)
+        function handleInquiry(e) {
+            e.preventDefault();
+            const name = document.getElementById('inq-name').value;
+            const phone = document.getElementById('inq-phone').value;
+            const loader = document.getElementById('inq-loader');
+            const successMsg = document.getElementById('inq-success');
+
+            loader.classList.remove('hidden');
+
+            // Send POST request
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "saveLead", name: name, phone: phone })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loader.classList.add('hidden');
+                successMsg.classList.remove('hidden');
+                document.getElementById('inq-name').value = "";
+                document.getElementById('inq-phone').value = "";
+            });
+        }
+
+        // Start with Login visible
+        showSection('login');
+    </script>
+</body>
+</html>
