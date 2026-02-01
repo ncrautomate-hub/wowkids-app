@@ -6,29 +6,32 @@
     <title>WowKids Parent Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Custom Loader Animation */
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-blue-50 min-h-screen font-sans">
+<body class="bg-blue-50 min-h-screen font-sans pb-20">
 
     <div id="hero-section" class="p-6 max-w-md mx-auto">
         <div class="bg-white rounded-2xl shadow-xl p-6 text-center mt-10">
             <h1 class="text-3xl font-bold text-blue-600 mb-2">WowKids 🎈</h1>
             <p class="text-gray-500 mb-6">Little Learners Academy</p>
+            
             <div class="flex space-x-2 mb-6">
-                <button onclick="showSection('login')" class="flex-1 bg-blue-100 text-blue-600 py-2 rounded-lg font-semibold hover:bg-blue-200">Parent Login</button>
-                <button onclick="showSection('inquiry')" class="flex-1 bg-green-100 text-green-600 py-2 rounded-lg font-semibold hover:bg-green-200">New Inquiry</button>
+                <button onclick="showSection('login')" class="flex-1 bg-blue-100 text-blue-600 py-2 rounded-lg font-semibold hover:bg-blue-200 transition">Parent Login</button>
+                <button onclick="showSection('inquiry')" class="flex-1 bg-green-100 text-green-600 py-2 rounded-lg font-semibold hover:bg-green-200 transition">New Inquiry</button>
             </div>
         </div>
     </div>
 
     <div id="login-section" class="hidden p-6 max-w-md mx-auto">
         <div class="bg-white rounded-2xl shadow-lg p-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Check Status</h2>
-            <input type="number" id="login-phone" placeholder="Enter Phone (e.g., 999)" class="w-full p-3 border rounded-lg mb-4">
-            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700">Check Status</button>
-            <button onclick="location.reload()" class="w-full text-gray-400 mt-2 text-sm">Back</button>
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Check Your Child's Status</h2>
+            <input type="number" id="login-phone" placeholder="Enter Phone Number (e.g., 999)" class="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold shadow-md hover:bg-blue-700 transition">Check Status</button>
+            <button onclick="location.reload()" class="w-full text-gray-400 mt-4 text-sm">Back to Home</button>
+            
             <div id="login-loader" class="loader mx-auto mt-4 hidden"></div>
             <p id="login-error" class="text-red-500 text-sm mt-3 text-center hidden"></p>
         </div>
@@ -51,13 +54,38 @@
                 </div>
             </div>
         </div>
-        
+
         <h3 class="text-lg font-bold text-gray-700 mt-6 mb-3">Daily Updates 📅</h3>
         <div id="diary-container" class="space-y-4">
             <p class="text-gray-400 text-center italic">No updates yet...</p>
         </div>
+
+        <hr class="my-8 border-gray-300">
         
-        <button onclick="location.reload()" class="w-full text-gray-500 py-4 mt-4">Sign Out</button>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6 text-center">
+            <h3 class="font-bold text-yellow-800 mb-2">Love WowKids? 🌟</h3>
+            <p class="text-sm text-yellow-700 mb-3">Please rate us on Google!</p>
+            <a href="https://maps.app.goo.gl/LBZxchVGMeMeGe8S6" target="_blank" class="inline-block bg-yellow-400 text-yellow-900 font-bold py-2 px-6 rounded-full shadow hover:bg-yellow-500 transition">
+                Rate Us ⭐⭐⭐⭐⭐
+            </a>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4 border border-gray-200 shadow-sm">
+            <h3 class="font-bold text-gray-700 mb-3">Have a Concern? 💬</h3>
+            <form onsubmit="handleFeedback(event)">
+                <select id="feed-category" class="w-full p-2 border rounded-lg mb-2 text-sm bg-white">
+                    <option value="General">General Query</option>
+                    <option value="Curriculum">Academics</option>
+                    <option value="Maintenance">Facilities/Hygiene</option>
+                    <option value="Compliment">Appreciation ❤️</option>
+                </select>
+                <textarea id="feed-message" rows="3" placeholder="Type your message here..." required class="w-full p-3 border rounded-lg mb-3 text-sm focus:ring-2 focus:ring-blue-400"></textarea>
+                <button type="submit" class="w-full bg-gray-700 text-white py-2 rounded-lg font-bold hover:bg-gray-800 transition">Send to Director</button>
+            </form>
+            <p id="feed-status" class="text-center text-sm mt-2 hidden"></p>
+        </div>
+
+        <button onclick="location.reload()" class="w-full text-gray-400 py-6 mt-4 font-semibold">Sign Out</button>
     </div>
 
     <div id="inquiry-section" class="hidden p-6 max-w-md mx-auto">
@@ -66,62 +94,75 @@
             <form onsubmit="handleInquiry(event)">
                 <input type="text" id="inq-name" placeholder="Parent Name" required class="w-full p-3 border rounded-lg mb-3">
                 <input type="tel" id="inq-phone" placeholder="Phone Number" required class="w-full p-3 border rounded-lg mb-3">
-                <button type="submit" class="w-full bg-green-500 text-white py-3 rounded-lg font-bold hover:bg-green-600">Submit Inquiry</button>
+                <button type="submit" class="w-full bg-green-500 text-white py-3 rounded-lg font-bold shadow-md hover:bg-green-600 transition">Submit Inquiry</button>
             </form>
-            <button onclick="location.reload()" class="w-full text-gray-400 mt-2 text-sm">Back</button>
+            <button onclick="location.reload()" class="w-full text-gray-400 mt-4 text-sm">Back to Home</button>
             <div id="inq-loader" class="loader mx-auto mt-4 hidden"></div>
-            <p id="inq-success" class="text-green-600 text-center mt-3 hidden font-bold">Success! We will call you.</p>
+            <p id="inq-success" class="text-green-600 text-center mt-3 hidden font-bold">Success! We will call you shortly.</p>
         </div>
     </div>
 
+    <a href="https://wa.me/919876543210?text=Hello%20WowKids,%20I%20have%20an%20inquiry" 
+       target="_blank"
+       class="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-transform hover:scale-110 z-50 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592z"/>
+        </svg>
+        <span class="font-bold hidden md:inline">Chat with us</span>
+    </a>
+
     <script>
-        // 👇👇 PASTE YOUR URL INSIDE THE QUOTES BELOW 👇👇
+        // 👇👇 PASTE YOUR APPS SCRIPT URL HERE (Inside the quotes) 👇👇
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzfo0ZqbqC1PoiaFGA75eB-X47CCvJTg18E9w5heAqMqWlynDs6uRSLTp_m8fCYYBP/exec"; 
-        // 👆👆 MAKE SURE QUOTES ARE PRESENT " " 👆👆
+        // 👆👆 Example: "https://script.google.com/macros/s/.../exec" 👆👆
 
         function showSection(section) {
-            console.log("Switching to:", section);
             ['hero-section', 'login-section', 'inquiry-section', 'dashboard-section'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById(section + '-section').classList.remove('hidden');
         }
 
+        // 1️⃣ HANDLE LOGIN
         function handleLogin() {
             const phone = document.getElementById('login-phone').value;
             const loader = document.getElementById('login-loader');
             const errorMsg = document.getElementById('login-error');
             
-            if (!phone) { alert("Please enter a phone number"); return; }
-            if (SCRIPT_URL.includes("PASTE_YOUR")) { alert("❌ Error: You forgot to paste the Script URL in the code!"); return; }
+            if (!phone) return alert("Please enter a phone number");
+            if (SCRIPT_URL.includes("YOUR_SCRIPT_URL")) return alert("❌ Setup Error: You forgot to paste the Script URL in the code!");
 
             loader.classList.remove('hidden');
             errorMsg.classList.add('hidden');
 
             fetch(`${SCRIPT_URL}?action=getStudent&phone=${phone}`)
-                .then(res => res.json())
+                .then(response => response.json())
                 .then(data => {
                     loader.classList.add('hidden');
                     if (data.error) {
-                        errorMsg.textContent = "❌ Not Found. Try 999 or check Sheet.";
+                        errorMsg.textContent = "❌ Number not found. Try 999";
                         errorMsg.classList.remove('hidden');
                     } else {
                         showSection('dashboard');
+                        
+                        // Fill Data
                         document.getElementById('student-name').textContent = data.name;
                         document.getElementById('parent-name').textContent = data.parent;
                         document.getElementById('fee-amount').textContent = "₹" + data.fee_amount;
                         
-                        // Badge Logic
-                        const badge = document.getElementById('fee-status');
-                        badge.textContent = data.fee_status;
-                        badge.className = `px-3 py-1 rounded-full text-sm font-bold ${data.fee_status === 'Paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+                        const statusBadge = document.getElementById('fee-status');
+                        statusBadge.textContent = data.fee_status;
+                        statusBadge.className = data.fee_status === "Paid" 
+                            ? "px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700" 
+                            : "px-3 py-1 rounded-full text-sm font-bold bg-red-100 text-red-700";
 
-                        // Diary Logic
-                        const diary = document.getElementById('diary-container');
-                        diary.innerHTML = "";
+                        // Fill Diary
+                        const diaryContainer = document.getElementById('diary-container');
+                        diaryContainer.innerHTML = ""; 
+                        
                         if (data.logs && data.logs.length > 0) {
                             data.logs.forEach(log => {
-                                diary.innerHTML += `
+                                const card = `
                                     <div class="bg-white rounded-xl shadow p-4 border-l-4 border-blue-400">
                                         <div class="flex justify-between items-center mb-2">
                                             <span class="font-bold text-gray-800">${log.date}</span>
@@ -129,55 +170,82 @@
                                         </div>
                                         <p class="text-gray-600 text-sm mb-3">${log.note}</p>
                                         <div class="flex gap-2 text-xs">
-                                            <span class="px-2 py-1 bg-green-50 text-green-700 rounded border">🍱 ${log.food}</span>
-                                            <span class="px-2 py-1 bg-purple-50 text-purple-700 rounded border">😴 ${log.sleep}</span>
+                                            <span class="px-2 py-1 bg-green-50 text-green-700 rounded border border-green-200">🍱 ${log.food}</span>
+                                            <span class="px-2 py-1 bg-purple-50 text-purple-700 rounded border border-purple-200">😴 ${log.sleep}</span>
                                         </div>
                                     </div>`;
+                                diaryContainer.innerHTML += card;
                             });
                         } else {
-                            diary.innerHTML = '<p class="text-gray-400 text-center italic mt-4">No recent logs found.</p>';
+                            diaryContainer.innerHTML = '<p class="text-gray-400 text-center italic mt-4">No recent logs found.</p>';
                         }
                     }
                 })
                 .catch(err => {
                     loader.classList.add('hidden');
-                    errorMsg.textContent = "Server Error: " + err.message;
+                    errorMsg.textContent = "Server Error. Please try again.";
                     errorMsg.classList.remove('hidden');
-                    console.error("Fetch Error:", err);
                 });
         }
 
+        // 2️⃣ HANDLE INQUIRY
         function handleInquiry(e) {
             e.preventDefault();
-            const form = {
-                action: "saveLead",
-                name: document.getElementById('inq-name').value,
-                phone: document.getElementById('inq-phone').value
-            };
-            
-            document.getElementById('inq-loader').classList.remove('hidden');
+            const name = document.getElementById('inq-name').value;
+            const phone = document.getElementById('inq-phone').value;
+            const loader = document.getElementById('inq-loader');
+            const successMsg = document.getElementById('inq-success');
+
+            loader.classList.remove('hidden');
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                body: JSON.stringify(form)
+                body: JSON.stringify({ action: "saveLead", name: name, phone: phone })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loader.classList.add('hidden');
+                successMsg.classList.remove('hidden');
+                document.getElementById('inq-name').value = "";
+                document.getElementById('inq-phone').value = "";
+            });
+        }
+
+        // 3️⃣ HANDLE FEEDBACK
+        function handleFeedback(e) {
+            e.preventDefault();
+            
+            const phone = document.getElementById('login-phone').value;
+            const msg = document.getElementById('feed-message').value;
+            const cat = document.getElementById('feed-category').value;
+            const statusTxt = document.getElementById('feed-status');
+
+            statusTxt.textContent = "Sending...";
+            statusTxt.classList.remove('hidden', 'text-green-600', 'text-red-600');
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    action: "saveFeedback", 
+                    phone: phone, 
+                    message: msg, 
+                    category: cat 
+                })
             })
             .then(res => res.json())
             .then(data => {
-                document.getElementById('inq-loader').classList.add('hidden');
-                document.getElementById('inq-success').classList.remove('hidden');
-                document.getElementById('inq-name').value = "";
-                document.getElementById('inq-phone').value = "";
+                statusTxt.textContent = "✅ Message sent! We will reply soon.";
+                statusTxt.classList.add('text-green-600');
+                document.getElementById('feed-message').value = ""; 
             })
-            .catch(err => alert("Error saving lead: " + err));
+            .catch(err => {
+                statusTxt.textContent = "❌ Error sending message.";
+                statusTxt.classList.add('text-red-600');
+            });
         }
+
+        // Start with Hero
+        showSection('hero');
     </script>
-<a href="https://wa.me/919560692862?text=Hello%20WowKids,%20I%20have%20an%20inquiry" 
-   target="_blank"
-   class="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-transform hover:scale-110 z-50 flex items-center gap-2">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592z"/>
-    </svg>
-    <span class="font-bold hidden md:inline">Chat with us</span>
-</a>
 </body>
 </html>
